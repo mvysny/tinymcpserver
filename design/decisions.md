@@ -198,7 +198,7 @@ loses the fail-fast: a throwing `onSessionStarted` withdraws the session and fai
 so an unreachable database surfaces at the handshake instead of as the model's first confusing
 tool error.
 
-**Why not treat an uncalled hook as a pre-1.0 guess.** Rejected — what the hooks cost is already
+**Why not drop an uncalled hook as speculative.** Rejected — what the hooks cost is already
 paid and tested: the lockdown in `D_settable_listeners`, the exception containment on every close
 path, and the test that a throwing close listener does not wedge eviction or `closeAllSessions`.
 Removing them saves little, and the first embedder with a resource to release would put them back.

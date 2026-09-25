@@ -51,7 +51,7 @@ Every fact lives in exactly one of these; the others link to it.
 - **Transports compose, never inherit.** A transport takes a configured `MCPHandler`; nothing extends a transport to configure it.
 - **One handler, one transport, one lifecycle cycle.** No restart, no reuse, no sharing.
 - **Every `.java` and `.gradle.kts` file opens with the Apache-2.0 header** naming Martin Vysny, verbatim; the full text is `LICENSE`.
-- **Pre-1.0: break APIs freely.**
+- **Follow semver: break APIs only in a major release.**
 
 ## Commands
 

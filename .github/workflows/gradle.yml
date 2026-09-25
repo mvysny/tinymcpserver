@@ -9,7 +9,7 @@ jobs:
     container: buildpack-deps:scm
     timeout-minutes: 5
     steps:
-    - uses: actions/checkout@v6
+    - uses: actions/checkout@v7
     - name: Verify design tripwires
       run: |
         git config --global --add safe.directory "$GITHUB_WORKSPACE"
@@ -36,9 +36,9 @@ jobs:
     timeout-minutes: 20
 
     steps:
-    - uses: actions/checkout@v6
+    - uses: actions/checkout@v7
     - name: Set up JDK 11 and ${{ matrix.java }}
-      uses: actions/setup-java@v5
+      uses: actions/setup-java@v6
       with:
         # Both: the build runs on matrix.java (the last one listed wins
         # JAVA_HOME), while `testJava11` forks the Java 11 toolchain that
@@ -49,7 +49,7 @@ jobs:
           ${{ matrix.java }}
         distribution: 'temurin'
     - name: Set up Gradle
-      uses: gradle/actions/setup-gradle@v4
+      uses: gradle/actions/setup-gradle@v5
     - name: Build with Gradle
       shell: bash
       run: ./gradlew clean build --no-daemon --no-watch-fs

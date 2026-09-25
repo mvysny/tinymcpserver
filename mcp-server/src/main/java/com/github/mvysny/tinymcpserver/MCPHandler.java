@@ -21,7 +21,7 @@ import org.jspecify.annotations.Nullable;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
 import java.util.Properties;
@@ -564,7 +564,7 @@ public class MCPHandler {
 
     /** Answers {@code ping} with {@code {}}, without touching any session. */
     Object dispatchPing() {
-        return Collections.emptyMap();
+        return new HashMap<>();
     }
 
     /**

@@ -134,6 +134,12 @@ subprojects {
             (options as StandardJavadocDocletOptions).apply {
                 addStringOption("Xdoclint:none", "-quiet")
                 quiet()
+                // The JDK's own block tags; javadoc knows them only when told.
+                tags(
+                    "apiNote:a:API Note:",
+                    "implSpec:a:Implementation Requirements:",
+                    "implNote:a:Implementation Note:"
+                )
             }
         }
 

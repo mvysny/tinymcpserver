@@ -38,7 +38,7 @@ tasks.named("check") { dependsOn(verifyDesignTripwires) }
 
 allprojects {
     group = "com.github.mvysny.tinymcpserver"
-    version = "0.0.1-SNAPSHOT"
+    version = "1.0-SNAPSHOT"
 
     repositories {
         mavenCentral()

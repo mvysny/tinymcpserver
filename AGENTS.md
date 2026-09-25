@@ -18,7 +18,7 @@ It implements the protocol and knows nothing about what the tools do.
 | File | Owns | Loaded |
 |---|---|---|
 | `README.md` | the pitch, how to use it, the demo, what it does not do | — |
-| `CONTRIBUTING.md` | how to contribute, how to release | — |
+| `CONTRIBUTING.md` | how to contribute, the test legs and the manual tests, the release flow | — |
 | `AGENTS.md` (this) | promises, invariants, the module and package map, conventions, commands | every turn |
 | `design/architecture.md` | how the pieces compose — the transport/protocol seam, the session lifecycle, the flows; normative | lazy |
 | `design/decisions.md` | why this and not that — `D_` entries, FAQ-shaped | lazy |

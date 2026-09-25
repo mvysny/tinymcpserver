@@ -1,0 +1,13 @@
+[versions]
+mcp = "1.1.1"
+jetty = "12.1.8"
+
+[libraries]
+junit = "org.junit.jupiter:junit-jupiter-engine:5.14.4"
+mcp-client = { module = "io.modelcontextprotocol.sdk:mcp", version.ref = "mcp" }
+mcp-json-jackson3 = { module = "io.modelcontextprotocol.sdk:mcp-json-jackson3", version.ref = "mcp" }
+gson = "com.google.code.gson:gson:2.13.2"
+jspecify = "org.jspecify:jspecify:1.0.1"
+jetty-servlet = { module = "org.eclipse.jetty.ee10:jetty-ee10-servlet", version.ref = "jetty" }
+slf4j-simple = "org.slf4j:slf4j-simple:2.0.16"
+

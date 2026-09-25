@@ -1,0 +1,13 @@
+.gradle
+build
+.settings
+bin
+.project
+.classpath
+*.iml
+*.ipr
+*.iws
+.idea
+.claude/worktrees
+.claude/settings.local.json
+.vscode

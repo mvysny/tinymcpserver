@@ -1,0 +1,43 @@
+name: Gradle
+
+on: [push, pull_request]
+
+jobs:
+  build:
+
+    strategy:
+      matrix:
+        os: [ubuntu-latest]
+        # 11 is the floor the shipped jars target, and building on it proves a
+        # developer stuck there can still work on this project — that leg skips
+        # the official-SDK conformance tests, which need 17. 24 is the ceiling:
+        # Gradle 8.14.3 does not run on 25, and 8.14.3 is the last Gradle that
+        # runs on 11.
+        java: [11, 17, 21, 24]
+        include:
+          - os: windows-latest
+            java: 17
+          - os: macos-latest
+            java: 17
+
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 20
+
+    steps:
+    - uses: actions/checkout@v6
+    - name: Set up JDK 11 and ${{ matrix.java }}
+      uses: actions/setup-java@v5
+      with:
+        # Both: the build runs on matrix.java (the last one listed wins
+        # JAVA_HOME), while `testJava11` forks the Java 11 toolchain that
+        # setup-java exposes as JAVA_HOME_11_<arch>. gradle.properties tells
+        # Gradle to look there.
+        java-version: |
+          11
+          ${{ matrix.java }}
+        distribution: 'temurin'
+    - name: Set up Gradle
+      uses: gradle/actions/setup-gradle@v4
+    - name: Build with Gradle
+      shell: bash
+      run: ./gradlew clean build --no-daemon --no-watch-fs

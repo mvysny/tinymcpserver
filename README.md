@@ -16,7 +16,7 @@ It runs on Java 11. See `design/decisions.md`, `D_no_framework_deps`.
 
 ```kotlin
 dependencies {
-    implementation("com.github.mvysny.tinymcpserver:mcp-server:<version>")
+    implementation("com.github.mvysny.tinymcpserver:mcp-server:1.0")
 }
 ```
 

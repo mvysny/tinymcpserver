@@ -1,9 +1,12 @@
 # Architecture
 
-How the pieces compose — what no single symbol can say and what would be expensive to overturn.
-**Normative: the code conforms.** Change this file first, then the code. Not here: why
-(`decisions.md` — cite the `D_`), what the specification or the SDK does (`research.md` — cite
-the `R_`), one symbol's behaviour (its doc comment), the package map (`AGENTS.md`).
+How the pieces compose — what no single symbol can say and what would be expensive to overturn:
+wiring and dependency direction, the lifecycle / threading / data-flow story, the flows a newcomer
+needs, where to start reading. **Normative: the code conforms.** Change this file first, then the
+code. Not here: why (`decisions.md` — cite the `D_`), what the specification or the SDK does
+(`research.md` — cite the `R_`), one symbol's behaviour (its doc comment), the package map
+(`AGENTS.md`). Only the sections with content; the first bullet or step of each is the ruler.
+Cap 12 KB — over it, research or doc-comment content has crept in.
 
 ---
 
@@ -14,15 +17,15 @@ the `R_`), one symbol's behaviour (its doc comment), the package map (`AGENTS.md
   transports exist at all (`D_handler_transport_split`).
 - `MCPHandler` is both the dispatch core and the configuration object. A caller registers tools
   on it and sets its session listeners, then hands it to exactly one transport, which drives its
-  `start()` / `stop()`. One handler, one transport, one lifecycle cycle.
+  `start()` / `stop()`.
 - The two transports are shells over the same handler. `HttpMCPServer` adds the JDK `HttpServer`,
   method routing, `Mcp-Session-Id` validation and JSON-RPC framing over HTTP; `StdioMCPServer`
   adds a newline-delimited read loop and holds one implicit session.
 - `client` depends on `MCPProtocol` and on nothing else in the server package; nothing in
   the server package depends on it.
-- Handler code never writes bytes. A handler method returns a result POJO or throws
-  `MCPServerException`; `HttpMCPServer.handleRequest` is the single place an exception becomes a
-  response (`D_three_error_layers`).
+- Errors travel up as exceptions: `HttpMCPServer.handleRequest` is the single place one becomes
+  an HTTP response — the seam the throw/write invariant in `AGENTS.md` protects
+  (`D_three_error_layers`).
 - No static mutable state. `MCPSession.getCurrent()` is the one thread-local, and it exists so
   tool code can reach its session and, through it, the shared executor.
 

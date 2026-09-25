@@ -1,13 +1,15 @@
-# Research — the Model Context Protocol and its official Java SDK
+# Research — the Model Context Protocol, its official Java SDK, and Claude Code as a client
 
 What the things we don't own actually do. About *them*, never us: a sentence starting "we chose"
 is a `D_`. `## R_<slug> — <title>`, one claim per bullet, one provenance marker per claim —
 **[docs]**, **[src]**, **[verified <date>, <version>]**, **[unverified]** (a hypothesis; a design
 built on it says so). A claim is earned by its provenance, or by having cost real work to find
-out. Checked against MCP specification 2025-03-26 and `io.modelcontextprotocol.sdk` 1.1.1; a
-version-sensitive claim names the version it was seen on. Cite by slug, `R_<slug>`, never by
-position; `grep '^## R_' design/research.md` is the index. The first entry is the ruler: every
-later one trims to its length — which is how long this file gets, so keep it short.
+out. Checked against MCP specification 2025-03-26 and 2025-06-18, `io.modelcontextprotocol.sdk`
+1.1.1 and Claude Code 2.1.281; a version-sensitive claim names the version it was seen on. Cite
+by slug, `R_<slug>`, never by position; `grep '^## R_' design/research.md` is the index. The
+first entry is the ruler: every later one trims to its length — which is how long this file
+gets, so keep it short. When you have written an entry, re-read it against the one above and
+cut what the provenance markers already carry.
 
 ---
 
@@ -46,9 +48,9 @@ later one trims to its length — which is how long this file gets, so keep it s
   `Content-Length` header framing is LSP's, not MCP's. **[docs]**
 - The stdio transport carries **no session id on the wire at all** — there is one implicit
   session for the life of the process. **[docs]**
-- Consequence, and the reason `D_stdio_never_evicts` exists: a stdio client has no 404 to
-  observe and no id to resend, so it has no protocol-level reason to ever re-initialize. A
-  server-side session that dies under stdio is unrecoverable by the client.
+- So a stdio client has no 404 to observe and no id to resend, and nothing in the protocol ever
+  prompts it to re-initialize: a server-side session that dies under stdio is unrecoverable by
+  the client.
   **[verified 2026-08-18, field incident]**
 
 ## R_mcp_iserror_tools_only — `isError` is a field on tool results only

@@ -3,6 +3,18 @@ name: Gradle
 on: [push, pull_request]
 
 jobs:
+  design-tripwires:
+    # The doc layer only: bash and git, which the language images lack.
+    runs-on: ubuntu-latest
+    container: buildpack-deps:scm
+    timeout-minutes: 5
+    steps:
+    - uses: actions/checkout@v6
+    - name: Verify design tripwires
+      run: |
+        git config --global --add safe.directory "$GITHUB_WORKSPACE"
+        design/verify_design_tripwires.sh
+
   build:
 
     strategy:

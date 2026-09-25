@@ -26,6 +26,16 @@ plugins {
 
 defaultTasks("clean", "build")
 
+// The doc layer's checks ride on `check`, so `./gradlew` runs them. Skipped on
+// Windows, where bash is not a given; the CI job of its own covers it there.
+val verifyDesignTripwires by tasks.registering(Exec::class) {
+    description = "Checks the doc layer: AGENTS.md and design/"
+    group = "verification"
+    onlyIf { !System.getProperty("os.name").startsWith("Windows") }
+    commandLine("bash", "design/verify_design_tripwires.sh")
+}
+tasks.named("check") { dependsOn(verifyDesignTripwires) }
+
 allprojects {
     group = "com.github.mvysny.tinymcpserver"
     version = "0.0.1-SNAPSHOT"

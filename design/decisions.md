@@ -2,16 +2,16 @@
 
 Why this server is the way it is and not otherwise — FAQ-shaped: each entry is a question and its
 current answer. Rewrite the answer when it changes; delete the entry when nobody asks any more.
-An entry is earned by what it would cost to reverse, or by research the next person would
-otherwise redo (cited as its `R_`). **The roads not taken are the most valuable thing in here**:
-`architecture.md` says how the server is, and only this file says which cheaper-looking design
-was tried and why it lost — so a rejected road keeps every one of its losing reasons, and an
-entry that needs its roads is long and stays long. Not an entry: a method name, the testing
-library, a version bump, which logger — a comment at the site of the choice, or nothing; nothing
-about `design/` itself. Cite by slug, `D_<slug>`, never by position;
-`grep '^## D_' design/decisions.md` is the index. When you have written an entry, re-read it
-against the one above, check it says nothing the doc comments already say, and check that every
-rejected road still carries the whole reason it lost.
+An entry is earned by what it would cost to reverse — half the code base — or by research the
+next person would otherwise redo (cited as its `R_`). Not an entry: windows → panels "because
+that's the trend", this red over that red, `get_foo` over `is_foo?`, the testing library, the CI
+host, a version bump — a comment at the site of the choice, or nothing; nothing about `design/`
+itself. Cite by slug, `D_<slug>`, never by position; `grep '^## D_' design/decisions.md` is the
+index. The first entry is the ruler: every later one trims to its length. **The roads not taken
+are the most valuable thing in here** — only this file says which cheaper-looking design was
+tried and why it lost — so a rejected road keeps every one of its losing reasons. When you have
+written an entry, re-read it against the one above, check it says nothing the doc comments
+already say, and check that every rejected road still carries the whole reason it lost.
 
 ---
 

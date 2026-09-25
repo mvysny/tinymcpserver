@@ -38,15 +38,15 @@ Every fact lives in exactly one of these; the others link to it.
 ## Module map
 
 - `mcp-server` — the library, published as `com.github.mvysny.tinymcpserver:mcp-server`.
-  - `com.github.mvysny.tinymcpserver` — protocol dispatch, the session map, both transports, `ToolDescriptor`.
+  - `com.github.mvysny.tinymcpserver` — protocol dispatch, the session map, both transports, the tool/resource/prompt registries.
   - `com.github.mvysny.tinymcpserver.client` — the minimal HTTP MCP client that drives the test suites.
 - `weather-demo` — a runnable server over the library; not published. It shows the API, so it stays small.
 
 ## Conventions
 
-- **Java 11, plain classes, no framework**, tests included; `--release 11` enforces it, so no records and no `sealed`. The official MCP SDK is 17-only and confined to `mcp-server/src/testOfficial`.
+- **Java 11, plain classes, no framework**, tests included; `--release 11` enforces it, so no records and no `sealed`.
 - **GSON for JSON**, `java.net.http.HttpClient` for the client side, `com.sun.net.httpserver` for the server side.
-- **Tests: JUnit 5**, and the tool suite runs twice — through `TinyMCPClient` (also on Java 11) and, from `src/testOfficial`, through the official MCP SDK. See `D_conformance_two_clients`.
+- **Tests: JUnit 5**, and the tool suite runs twice — through `TinyMCPClient` (also on Java 11) and through the official MCP SDK, which is 17-only and lives in `mcp-server/src/testOfficial` alone. See `D_conformance_two_clients`.
 - **Diagnostics go to `java.util.logging`**, never to `System.out`; two audiences, two channels — the LLM reads the `isError` body, the operator reads stderr.
 - **Transports compose, never inherit.** A transport takes a configured `MCPHandler`; nothing extends a transport to configure it.
 - **One handler, one transport, one lifecycle cycle.** No restart, no reuse, no sharing.
@@ -55,13 +55,12 @@ Every fact lives in exactly one of these; the others link to it.
 
 ## Commands
 
-- `./gradlew` — clean, build, all tests. The default task, and what CI runs.
-- **Build with a JDK between 11 and 24** — Gradle 8.14.3 is the last that runs on 11 and does not run on 25.
+- `./gradlew` — clean, build, all tests, the doc tripwires; needs a build JDK 11–24, the range Gradle 8.14.3 runs on. The default task; CI runs it on push (`.github/workflows/gradle.yml`).
 - `./gradlew testJava11` — re-runs the tests on a Java 11 JVM; registered only when Gradle finds a JDK 11 (`export JDK11=/path/to/jdk11`).
 - `./gradlew :mcp-server:testOfficial` — the conformance suite through the official SDK; needs a 17+ build JDK.
 - `./gradlew test --tests "com.github.mvysny.tinymcpserver.MCPToolHandlerTest"` — one class; append `.methodName` for one method.
 - `./gradlew :weather-demo:run` — the demo over HTTP on `http://127.0.0.1:18088/mcp`.
-- `design/verify_design_tripwires.sh` — the doc layer.
+- `design/verify_design_tripwires.sh` — the doc layer alone; CI runs it in a job of its own.
 
 ## Skills this project follows
 
@@ -70,9 +69,10 @@ Every fact lives in exactly one of these; the others link to it.
 
 ## Maintenance of this file
 
-Loaded every turn; cap 34 KB, a module's own `AGENTS.md` 10 KB. Over it, in this order: delete
-what has no home — status, history, class lists, what the code already says; trim each line to
-its fact plus one clause and send the explanation home — why → `design/decisions.md`, how across
-symbols → `design/architecture.md`, how in one symbol → its doc comment, what upstream does →
-`design/research.md`. Never paraphrase a lazy entry into a line here.
-`design/verify_design_tripwires.sh` checks the caps and the cites.
+Loaded every turn; cap 34 KB, a module's own `AGENTS.md` 10 KB. Over it, in this order:
+delete what has no home — status, history, class lists, what the code already says; trim
+each line to its fact plus one clause and send the explanation home — why →
+`design/decisions.md`, how across symbols → `design/architecture.md`, how in one symbol →
+its doc comment, what upstream does → `design/research.md`; only then a module's own
+`AGENTS.md`, peripheral modules first, never the core. Never paraphrase a lazy entry into a
+line here. `design/verify_design_tripwires.sh` checks the caps and the cites.

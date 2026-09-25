@@ -42,6 +42,18 @@ cut what the provenance markers already carry.
 - JSON-RPC reserves **-32000..-32099** for implementation-defined server errors, which is where
   session-state conditions belong; -32600 and -32602 describe malformed input instead. **[docs]**
 
+## R_mcp_session_delete — HTTP DELETE: one named session, or an error
+
+- A client done with a session SHOULD send DELETE carrying its `Mcp-Session-Id`, ending *that*
+  session; a server MAY refuse with 405. Nothing ends more than one session — the text is the
+  same in 2025-06-18 and 2025-11-25. **[docs]**
+- A DELETE without the header falls under the general 400 for a request that omits it
+  (`R_mcp_session_lifecycle`). **[docs]**
+- A terminated session's id MUST get 404 on any later request, so a repeated DELETE is a 404,
+  not a 200. **[docs]**
+- The official SDK's servlet transport (`doDelete`, sdk 1.1.1) answers so: no header → 400 with
+  -32601, an unknown id → 404, a live id → ended and 200. **[src]**
+
 ## R_mcp_stdio_framing — stdio transport: framing and the absence of sessions
 
 - Framing is **newline-delimited JSON-RPC in UTF-8**, one message per line. The

@@ -26,6 +26,8 @@ import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
@@ -144,32 +146,56 @@ class HttpMCPServerLifecycleTest {
         assertEquals("Method Not Allowed", response.body());
     }
 
-    @Test
-    void deleteWithoutASessionIdClearsEverySession() throws Exception {
-        server = new HttpMCPServer(0, "/mcp");
-        server.start();
-        initializeOnce();
-        assertEquals(1, server.getHandler().getSessionCount());
+    // ===== DELETE (R_mcp_session_delete) =====
 
-        HttpResponse<String> response = send(HttpRequest.newBuilder(URI.create(server.getUrl()))
-                .DELETE().build());
+    @Test
+    void deleteEndsOnlyTheNamedSession() throws Exception {
+        List<String> closedIds = new CopyOnWriteArrayList<>();
+        server = new HttpMCPServer(0, "/mcp",
+                new MCPHandler().setOnSessionClosed(s -> closedIds.add(s.getId())));
+        server.start();
+        String ended = initialize();
+        initialize();
+
+        HttpResponse<String> response = send(delete(ended));
 
         assertEquals(200, response.statusCode());
-        assertEquals(0, server.getHandler().getSessionCount());
+        assertEquals(List.of(ended), closedIds);
+        assertEquals(1, server.getHandler().getSessionCount(), "the other session must survive");
     }
 
     @Test
-    void deleteForAnUnknownSessionIsStillA200() throws Exception {
-        // DELETE is cleanup: a client retrying it after the session already
-        // went away must not be handed an error it cannot act on.
+    void deleteWithoutASessionIdIs400AndEndsNothing() throws Exception {
+        server = new HttpMCPServer(0, "/mcp");
+        server.start();
+        initialize();
+
+        HttpResponse<String> response = send(HttpRequest.newBuilder(URI.create(server.getUrl()))
+                .DELETE().build());
+
+        assertEquals(400, response.statusCode());
+        assertTrue(response.body().contains(String.valueOf(MCPServerException.INVALID_REQUEST)), response.body());
+        assertEquals(1, server.getHandler().getSessionCount());
+    }
+
+    @Test
+    void deleteForAnUnknownSessionIs404() throws Exception {
         server = new HttpMCPServer(0, "/mcp");
         server.start();
 
-        HttpResponse<String> response = send(HttpRequest.newBuilder(URI.create(server.getUrl()))
-                .header("Mcp-Session-Id", "no-such-session")
-                .DELETE().build());
+        HttpResponse<String> response = send(delete("no-such-session"));
 
-        assertEquals(200, response.statusCode());
+        assertEquals(404, response.statusCode());
+    }
+
+    @Test
+    void aRepeatedDeleteIs404() throws Exception {
+        server = new HttpMCPServer(0, "/mcp");
+        server.start();
+        String sessionId = initialize();
+        assertEquals(200, send(delete(sessionId)).statusCode());
+
+        assertEquals(404, send(delete(sessionId)).statusCode());
     }
 
     // ===== helpers =====
@@ -178,7 +204,14 @@ class HttpMCPServerLifecycleTest {
         return HttpClient.newHttpClient().send(request, HttpResponse.BodyHandlers.ofString());
     }
 
-    private void initializeOnce() throws Exception {
+    private HttpRequest delete(String sessionId) {
+        return HttpRequest.newBuilder(URI.create(server.getUrl()))
+                .header("Mcp-Session-Id", sessionId)
+                .DELETE().build();
+    }
+
+    /** @return the new session's id */
+    private String initialize() throws Exception {
         HttpResponse<String> response = send(HttpRequest.newBuilder(URI.create(server.getUrl()))
                 .header("Content-Type", "application/json")
                 .POST(HttpRequest.BodyPublishers.ofString(
@@ -187,5 +220,6 @@ class HttpMCPServerLifecycleTest {
                                 + "\"clientInfo\":{\"name\":\"t\",\"version\":\"1\"}}}"))
                 .build());
         assertEquals(200, response.statusCode());
+        return response.headers().firstValue("Mcp-Session-Id").orElseThrow();
     }
 }

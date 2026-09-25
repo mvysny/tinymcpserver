@@ -21,7 +21,6 @@ import com.sun.net.httpserver.HttpServer;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
-import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.Executors;
 import java.util.logging.Level;
@@ -258,20 +257,23 @@ public class HttpMCPServer {
         rpc.sendResponse(result);
     }
 
+    /** Ends the one session the header names (R_mcp_session_delete). */
     private void handleDelete(JsonRpcExchange rpc) {
         String incomingSessionId = rpc.getHttpExchange().getRequestHeaders()
                 .getFirst("Mcp-Session-Id");
-        List<MCPSession> closed;
-        if (incomingSessionId != null) {
-            MCPSession session = handler.removeSession(incomingSessionId);
-            closed = session != null ? List.of(session) : List.of();
-        } else {
-            closed = handler.removeAllSessions();
+        if (incomingSessionId == null) {
+            LOG.warning("Rejecting DELETE: no Mcp-Session-Id header");
+            throw new MCPServerException(400, MCPServerException.INVALID_REQUEST,
+                    "DELETE needs an Mcp-Session-Id header naming the session to end.");
         }
-        for (MCPSession session : closed) {
-            LOG.info("Session terminated: " + session.getId());
-            handler.notifySessionClosed(session);
+        MCPSession session = handler.removeSession(incomingSessionId);
+        if (session == null) {
+            throw new MCPServerException(404,
+                    MCPServerException.SERVER_NOT_INITIALIZED,
+                    handler.tombstoneOrDefault(incomingSessionId));
         }
+        LOG.info("Session terminated: " + session.getId());
+        handler.notifySessionClosed(session);
         rpc.sendPlain(200, "");
     }
 

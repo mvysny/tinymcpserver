@@ -71,8 +71,14 @@ transport binds to `127.0.0.1` and nothing else.
 
 ## License
 
+Copyright 2000-2026 Vaadin Ltd.<br>
 Copyright 2026 Martin Vysny
 
 Licensed under the [Apache License, Version 2.0](LICENSE). Every source file
 carries the corresponding header; contributions are accepted under the same
 license.
+
+TinyMCPServer is derived from [vaadin/swing-mcp](https://github.com/vaadin/swing-mcp),
+where it started as the `tiny-mcp-server` module, and has been modified since by
+Martin Vysny. Files that came from there name both copyright holders; files added
+here name Martin Vysny alone.

@@ -1,4 +1,5 @@
 /*
+ * Copyright 2000-2026 Vaadin Ltd.
  * Copyright 2026 Martin Vysny
  * SPDX-License-Identifier: Apache-2.0
  *

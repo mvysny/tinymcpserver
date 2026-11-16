@@ -45,8 +45,10 @@ Cap 12 KB — over it, research or doc-comment content has crept in.
    bad argument, caught by the schema or a `Parameters` accessor, throws
    `MCPErrorResponseException` (`D_tool_error_codes`).
 5. The function returns `Content`, or throws. A thrown `MCPErrorResponseException` becomes
-   `isError: true` with its message; an `MCPServerException` becomes a JSON-RPC error; anything
-   else unexpected is logged at SEVERE and rendered as HTTP 500.
+   `isError: true` with its message; an `MCPServerException` becomes a JSON-RPC error; any other
+   exception is logged at WARNING and becomes `isError: true` with its `toString()`. Only an
+   exception from outside the tool, a server bug, reaches `handleRequest`'s catch-all: logged
+   at SEVERE and rendered as HTTP 500 (`D_three_error_layers`).
 6. `handleRequest` writes the response. Nothing below step 5 knew it was HTTP.
 
 **A tool call over stdio** (on the thread that called `runStdio`):

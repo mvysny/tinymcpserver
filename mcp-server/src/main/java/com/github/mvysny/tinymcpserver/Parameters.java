@@ -31,9 +31,10 @@ import java.util.Objects;
  * int ref = params.getInt("ref");
  * }</pre>
  *
- * <p>Every accessor throws {@link MCPServerException} with
- * {@link MCPServerException#INVALID_PARAMS} naming the parameter when a
- * required one is missing or a value has the wrong type. The numeric ones
+ * <p>Every accessor throws {@link MCPErrorResponseException} naming the
+ * parameter when a required one is missing or a value has the wrong type, so
+ * the model gets an {@code isError} result it can correct (D_tool_error_codes).
+ * The numeric ones
  * also take a string-encoded number, {@code "21"} for {@code 21}
  * (D_coerce_string_numbers).
  *
@@ -56,11 +57,11 @@ public final class Parameters {
     public String getString(String key) {
         Object value = raw.get(key);
         if (value == null) {
-            throw new MCPServerException(MCPServerException.INVALID_PARAMS,
+            throw new MCPErrorResponseException(
                     "Required parameter '" + key + "' is missing");
         }
         if (!(value instanceof String)) {
-            throw new MCPServerException(MCPServerException.INVALID_PARAMS,
+            throw new MCPErrorResponseException(
                     "Parameter '" + key + "' must be a string");
         }
         return (String) value;
@@ -74,7 +75,7 @@ public final class Parameters {
             return null;
         }
         if (!(value instanceof String)) {
-            throw new MCPServerException(MCPServerException.INVALID_PARAMS,
+            throw new MCPErrorResponseException(
                     "Parameter '" + key + "' must be a string");
         }
         return (String) value;
@@ -90,24 +91,24 @@ public final class Parameters {
     public int getInt(String key) {
         Object value = raw.get(key);
         if (value == null) {
-            throw new MCPServerException(MCPServerException.INVALID_PARAMS,
+            throw new MCPErrorResponseException(
                     "Required parameter '" + key + "' is missing");
         }
         if (value instanceof String) {
             try {
                 return Integer.parseInt((String) value);
             } catch (NumberFormatException e) {
-                throw new MCPServerException(MCPServerException.INVALID_PARAMS,
+                throw new MCPErrorResponseException(
                         "Parameter '" + key + "' must be an integer, got '" + value + "'");
             }
         }
         if (!(value instanceof Number)) {
-            throw new MCPServerException(MCPServerException.INVALID_PARAMS,
+            throw new MCPErrorResponseException(
                     "Parameter '" + key + "' must be an integer, got " + value.getClass().getSimpleName());
         }
         Number num = (Number) value;
         if (!isInt(num)) {
-            throw new MCPServerException(MCPServerException.INVALID_PARAMS,
+            throw new MCPErrorResponseException(
                     "Parameter '" + key + "' must be an integer, got " + num);
         }
         return num.intValue();
@@ -120,19 +121,19 @@ public final class Parameters {
     public Number getNumber(String key) {
         Object value = raw.get(key);
         if (value == null) {
-            throw new MCPServerException(MCPServerException.INVALID_PARAMS,
+            throw new MCPErrorResponseException(
                     "Required parameter '" + key + "' is missing");
         }
         if (value instanceof String) {
             try {
                 return Double.parseDouble((String) value);
             } catch (NumberFormatException e) {
-                throw new MCPServerException(MCPServerException.INVALID_PARAMS,
+                throw new MCPErrorResponseException(
                         "Parameter '" + key + "' must be a number, got '" + value + "'");
             }
         }
         if (!(value instanceof Number)) {
-            throw new MCPServerException(MCPServerException.INVALID_PARAMS,
+            throw new MCPErrorResponseException(
                     "Parameter '" + key + "' must be a number, got " + value.getClass().getSimpleName());
         }
         return (Number) value;
@@ -142,11 +143,11 @@ public final class Parameters {
     public List<Integer> getIntArray(String key) {
         Object value = raw.get(key);
         if (value == null) {
-            throw new MCPServerException(MCPServerException.INVALID_PARAMS,
+            throw new MCPErrorResponseException(
                     "Required parameter '" + key + "' is missing");
         }
         if (!(value instanceof List)) {
-            throw new MCPServerException(MCPServerException.INVALID_PARAMS,
+            throw new MCPErrorResponseException(
                     "Parameter '" + key + "' must be an array of integers, got " + value.getClass().getSimpleName());
         }
         List<?> list = (List<?>) value;
@@ -160,15 +161,15 @@ public final class Parameters {
                 try {
                     num = Integer.parseInt((String) element);
                 } catch (NumberFormatException e) {
-                    throw new MCPServerException(MCPServerException.INVALID_PARAMS,
+                    throw new MCPErrorResponseException(
                             "Parameter '" + key + "' must be an array of integers, but element at index " + i + " is '" + element + "'");
                 }
             } else {
-                throw new MCPServerException(MCPServerException.INVALID_PARAMS,
+                throw new MCPErrorResponseException(
                         "Parameter '" + key + "' must be an array of integers");
             }
             if (!isInt(num)) {
-                throw new MCPServerException(MCPServerException.INVALID_PARAMS,
+                throw new MCPErrorResponseException(
                         "Parameter '" + key + "' must be an array of integers, but element at index " + i + " is " + num);
             }
             result.add(num.intValue());
@@ -196,17 +197,17 @@ public final class Parameters {
             try {
                 return Integer.parseInt((String) value);
             } catch (NumberFormatException e) {
-                throw new MCPServerException(MCPServerException.INVALID_PARAMS,
+                throw new MCPErrorResponseException(
                         "Parameter '" + key + "' must be an integer, got '" + value + "'");
             }
         }
         if (!(value instanceof Number)) {
-            throw new MCPServerException(MCPServerException.INVALID_PARAMS,
+            throw new MCPErrorResponseException(
                     "Parameter '" + key + "' must be an integer, got " + value.getClass().getSimpleName());
         }
         Number num = (Number) value;
         if (!isInt(num)) {
-            throw new MCPServerException(MCPServerException.INVALID_PARAMS,
+            throw new MCPErrorResponseException(
                     "Parameter '" + key + "' must be an integer, got " + num);
         }
         return num.intValue();
@@ -232,10 +233,10 @@ public final class Parameters {
             return false;
         }
         if (value instanceof String) {
-            throw new MCPServerException(MCPServerException.INVALID_PARAMS,
+            throw new MCPErrorResponseException(
                     "Parameter '" + key + "' must be a boolean, got '" + value + "'");
         }
-        throw new MCPServerException(MCPServerException.INVALID_PARAMS,
+        throw new MCPErrorResponseException(
                 "Parameter '" + key + "' must be a boolean, got " + value.getClass().getSimpleName());
     }
 

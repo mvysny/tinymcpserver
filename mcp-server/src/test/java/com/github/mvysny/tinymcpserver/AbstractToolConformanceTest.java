@@ -171,6 +171,10 @@ abstract class AbstractToolConformanceTest {
                     throw new MCPErrorResponseException("clean error message");
                 });
 
+        server.getHandler().addTool("read_int_param", "Reads a string parameter through Parameters.getInt",
+                new InputSchemaBuilder().requiredString("ref", "An integer, string-encoded").build(),
+                request -> MCPProtocol.Content.text(String.valueOf(request.arguments().getInt("ref"))));
+
         server.getHandler().addTool("no_params_tool", "Tool with no params",
                 new InputSchemaBuilder().build(),
                 request -> {
@@ -246,7 +250,7 @@ abstract class AbstractToolConformanceTest {
     void toolsListReturnsAllRegisteredTools() throws Exception {
         List<MCPProtocol.Tool> tools = client.listTools();
         assertNotNull(tools);
-        assertEquals(18, tools.size());
+        assertEquals(19, tools.size());
 
         MCPProtocol.Tool echoTool = toolNamed("echo_text");
         assertEquals("Echo a text message", echoTool.getDescription());
@@ -323,30 +327,39 @@ abstract class AbstractToolConformanceTest {
     }
 
     @Test
-    void callToolIntegerCoercionFractionalDoubleReturnsError() {
-        RpcError error = rpcErrorOf(() -> client.callTool("multi_type", Map.of(
+    void callToolIntegerCoercionFractionalDoubleReturnsIsError() throws Exception {
+        MCPProtocol.CallToolResult result = client.callTool("multi_type", Map.of(
                 "str_param", "x",
                 "int_param", 5.5,
                 "num_param", 1.0,
-                "bool_param", false)));
-        assertEquals(-32602, error.code);
-        assertEquals("Parameter 'int_param' must be a whole number, got 5.5", error.message);
+                "bool_param", false));
+        assertEquals(Boolean.TRUE, result.getIsError());
+        assertEquals("Parameter 'int_param' must be a whole number, got 5.5", textOf(result));
     }
 
     @Test
-    void callToolMissingRequiredParameterReturnsError() {
-        RpcError error = rpcErrorOf(() -> client.callTool("echo_text", Map.of()));
-        assertEquals(-32602, error.code);
-        assertEquals("Missing required parameter 'message'", error.message);
+    void callToolMissingRequiredParameterReturnsIsError() throws Exception {
+        lastCallArgs.set(null);
+        MCPProtocol.CallToolResult result = client.callTool("echo_text", Map.of());
+        assertEquals(Boolean.TRUE, result.getIsError());
+        assertEquals("Missing required parameter 'message'", textOf(result));
+        assertNull(lastCallArgs.get(), "the tool must not be invoked");
     }
 
     @Test
-    void callToolNullRequiredParameterTreatedAsMissing() {
+    void callToolNullRequiredParameterTreatedAsMissing() throws Exception {
         Map<String, Object> args = new HashMap<>();
         args.put("message", null);
-        RpcError error = rpcErrorOf(() -> client.callTool("echo_text", args));
-        assertEquals(-32602, error.code);
-        assertEquals("Missing required parameter 'message'", error.message);
+        MCPProtocol.CallToolResult result = client.callTool("echo_text", args);
+        assertEquals(Boolean.TRUE, result.getIsError());
+        assertEquals("Missing required parameter 'message'", textOf(result));
+    }
+
+    @Test
+    void callToolParametersAccessorFailureReturnsIsError() throws Exception {
+        MCPProtocol.CallToolResult result = client.callTool("read_int_param", Map.of("ref", "abc"));
+        assertEquals(Boolean.TRUE, result.getIsError());
+        assertEquals("Parameter 'ref' must be an integer, got 'abc'", textOf(result));
     }
 
     @Test
@@ -396,7 +409,8 @@ abstract class AbstractToolConformanceTest {
     @Test
     void callToolNotFoundReturnsError() {
         RpcError error = rpcErrorOf(() -> client.callTool("nonexistent_tool", Map.of()));
-        assertEquals(-32601, error.code, "an unknown tool is METHOD_NOT_FOUND, not a bad parameter");
+        assertEquals(-32602, error.code, "tools/call exists; only its name parameter is wrong");
+        assertEquals("Unknown tool: nonexistent_tool", error.message);
     }
 
     @Test
@@ -432,10 +446,10 @@ abstract class AbstractToolConformanceTest {
     }
 
     @Test
-    void callToolMissingRequiredArrayParamReturnsError() {
-        RpcError error = rpcErrorOf(() -> client.callTool("echo_array", Map.of()));
-        assertEquals(-32602, error.code);
-        assertEquals("Missing required parameter 'items'", error.message);
+    void callToolMissingRequiredArrayParamReturnsIsError() throws Exception {
+        MCPProtocol.CallToolResult result = client.callTool("echo_array", Map.of());
+        assertEquals(Boolean.TRUE, result.getIsError());
+        assertEquals("Missing required parameter 'items'", textOf(result));
     }
 
     // ===== tools/call — return value handling =====

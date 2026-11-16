@@ -76,8 +76,9 @@ class MCPToolHandler {
 
     /**
      * Dispatches {@code tools/call}. Any exception but {@link MCPServerException}
-     * becomes an {@code isError: true} result (D_three_error_layers); an unknown
-     * tool is {@code METHOD_NOT_FOUND}.
+     * becomes an {@code isError: true} result, argument validation included
+     * (D_three_error_layers); an unknown tool or a missing {@code name} is
+     * {@code INVALID_PARAMS} (D_tool_error_codes).
      *
      * @param transportHeaders empty over stdio
      */
@@ -85,13 +86,13 @@ class MCPToolHandler {
             Map<String, String> transportHeaders) {
         MCPProtocol.CallToolParams params = request.getParamsAs(MCPProtocol.CallToolParams.class);
         if (params == null || params.getName() == null) {
-            throw new MCPServerException(MCPServerException.METHOD_NOT_FOUND, "Method not found");
+            throw new MCPServerException(MCPServerException.INVALID_PARAMS, "Missing required parameter: name");
         }
 
         String toolName = params.getName();
         RegisteredTool tool = tools.get(toolName);
         if (tool == null) {
-            throw new MCPServerException(MCPServerException.METHOD_NOT_FOUND, "Method not found: " + toolName);
+            throw new MCPServerException(MCPServerException.INVALID_PARAMS, "Unknown tool: " + toolName);
         }
 
         Map<String, Object> rawArgs = params.getArguments() != null ? params.getArguments() : Collections.emptyMap();

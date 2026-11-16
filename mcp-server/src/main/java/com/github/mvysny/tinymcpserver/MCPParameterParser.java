@@ -75,11 +75,10 @@ class MCPParameterParser {
      * @return the declared parameters present, in declaration order; an absent
      *         optional one is omitted and a {@code null} value counts as absent
      * @throws MCPErrorResponseException for an unknown parameter, with a
-     *                                   did-you-mean hint
-     * @throws MCPServerException        with {@code INVALID_PARAMS} for a missing
-     *                                   required parameter, or an {@code integer}
-     *                                   one that is fractional or out of
-     *                                   {@code int} range
+     *                                   did-you-mean hint; for a missing
+     *                                   required parameter; for an
+     *                                   {@code integer} one that is fractional
+     *                                   or out of {@code int} range
      */
     Map<String, Object> parse(Map<String, Object> rawArgs) {
         List<String> unknownParams = new ArrayList<>();
@@ -133,7 +132,7 @@ class MCPParameterParser {
 
             if (value == null) {
                 if (isRequired) {
-                    throw new MCPServerException(MCPServerException.INVALID_PARAMS,
+                    throw new MCPErrorResponseException(
                             "Missing required parameter '" + paramName + "'");
                 }
                 continue;
@@ -143,19 +142,19 @@ class MCPParameterParser {
                 if (value instanceof Long) {
                     long l = (Long) value;
                     if (l < Integer.MIN_VALUE || l > Integer.MAX_VALUE) {
-                        throw new MCPServerException(MCPServerException.INVALID_PARAMS,
+                        throw new MCPErrorResponseException(
                                 "Parameter '" + paramName + "' value " + l + " is out of 32-bit integer range");
                     }
                     value = (int) l;
                 } else if (value instanceof Double) {
                     double d = (Double) value;
                     if (Double.isNaN(d) || Double.isInfinite(d) || d != Math.floor(d)) {
-                        throw new MCPServerException(MCPServerException.INVALID_PARAMS,
+                        throw new MCPErrorResponseException(
                                 "Parameter '" + paramName + "' must be a whole number, got " + d);
                     }
                     long l = (long) d;
                     if (l < Integer.MIN_VALUE || l > Integer.MAX_VALUE) {
-                        throw new MCPServerException(MCPServerException.INVALID_PARAMS,
+                        throw new MCPErrorResponseException(
                                 "Parameter '" + paramName + "' value " + l + " is out of 32-bit integer range");
                     }
                     value = (int) l;

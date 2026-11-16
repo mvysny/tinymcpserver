@@ -4,7 +4,7 @@ What the things we don't own actually do. About *them*, never us: a sentence sta
 is a `D_`. `## R_<slug> — <title>`, one claim per bullet, one provenance marker per claim —
 **[docs]**, **[src]**, **[verified <date>, <version>]**, **[unverified]** (a hypothesis; a design
 built on it says so). A claim is earned by its provenance, or by having cost real work to find
-out. Checked against MCP specification 2025-03-26 and 2025-06-18, `io.modelcontextprotocol.sdk`
+out. Checked against MCP specification 2025-03-26, 2025-06-18 and 2025-11-25, `io.modelcontextprotocol.sdk`
 1.1.1 and Claude Code 2.1.281; a version-sensitive claim names the version it was seen on. Cite
 by slug, `R_<slug>`, never by position; `grep '^## R_' design/research.md` is the index. The
 first entry is the ruler: every later one trims to its length — which is how long this file
@@ -74,6 +74,15 @@ cut what the provenance markers already carry.
   Resources and prompts are one-shot content producers. **[docs]**
 - Consequence: a failing resource or prompt handler has only the JSON-RPC error envelope as a
   structured channel back to the client. **[docs]**
+
+## R_mcp_tool_error_codes — `tools/call`: which failures are protocol errors
+
+- An unknown tool is a protocol error, and the spec's example is `-32602`, message
+  `Unknown tool: <name>`, in both versions. **[docs, spec 2025-06-18 and 2025-11-25]**
+- 2025-06-18 lists "Invalid arguments" as a protocol error. **[docs, spec 2025-06-18]**
+- 2025-11-25 moves "Input validation errors" to `isError: true` results, "so language models can
+  self-correct"; only a request failing the `CallToolRequest` schema stays a protocol error.
+  **[docs, spec 2025-11-25]**
 
 ## R_mcp_empty_content — A tool result's `content` may be an empty array
 

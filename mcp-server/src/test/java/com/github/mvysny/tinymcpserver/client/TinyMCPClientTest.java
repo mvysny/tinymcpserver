@@ -21,7 +21,6 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 import com.github.mvysny.tinymcpserver.InputSchemaBuilder;
 import com.github.mvysny.tinymcpserver.MCPProtocol;
-import com.github.mvysny.tinymcpserver.MCPServerException;
 import com.github.mvysny.tinymcpserver.HttpMCPServer;
 import com.github.mvysny.tinymcpserver.ToolRequest;
 import org.junit.jupiter.api.AfterAll;
@@ -234,22 +233,21 @@ class TinyMCPClientTest {
     }
 
     @Test
-    void missingRequiredParameterSurfacesAsClientException() throws IOException {
+    void missingRequiredParameterSurfacesAsIsError() throws IOException {
         try (MCPClient client = newClient()) {
-            MCPClientException ex = assertThrows(MCPClientException.class,
-                    () -> client.callTool("echo", Collections.emptyMap()));
-            assertEquals(MCPServerException.INVALID_PARAMS, ex.getCode());
-            assertTrue(ex.getMessage().contains("text"),
-                    "expected message to mention the missing parameter, got: " + ex.getMessage());
+            MCPProtocol.CallToolResult result = client.callTool("echo", Collections.emptyMap());
+            assertEquals(Boolean.TRUE, result.getIsError());
+            String text = result.getContent().get(0).getText();
+            assertTrue(text.contains("text"),
+                    "expected message to mention the missing parameter, got: " + text);
         }
     }
 
     @Test
     void integerParameterWithFractionalValueRejected() throws IOException {
         try (MCPClient client = newClient()) {
-            MCPClientException ex = assertThrows(MCPClientException.class,
-                    () -> client.callTool("capture", Map.of("i", 1.5)));
-            assertEquals(MCPServerException.INVALID_PARAMS, ex.getCode());
+            MCPProtocol.CallToolResult result = client.callTool("capture", Map.of("i", 1.5));
+            assertEquals(Boolean.TRUE, result.getIsError());
         }
     }
 

@@ -220,59 +220,52 @@ class MCPParameterParserTest {
 
         @Test
         void longOverflowThrows() {
-            MCPServerException ex = assertThrows(MCPServerException.class,
+            MCPErrorResponseException ex = assertThrows(MCPErrorResponseException.class,
                     () -> intTool().parse(Map.of("count", (long) Integer.MAX_VALUE + 1)));
-            assertEquals(MCPServerException.INVALID_PARAMS, ex.getCode());
             assertTrue(ex.getMessage().contains("out of 32-bit integer range"));
             assertTrue(ex.getMessage().contains("'count'"));
         }
 
         @Test
         void longUnderflowThrows() {
-            MCPServerException ex = assertThrows(MCPServerException.class,
+            MCPErrorResponseException ex = assertThrows(MCPErrorResponseException.class,
                     () -> intTool().parse(Map.of("count", (long) Integer.MIN_VALUE - 1)));
-            assertEquals(MCPServerException.INVALID_PARAMS, ex.getCode());
             assertTrue(ex.getMessage().contains("out of 32-bit integer range"));
         }
 
         @Test
         void fractionalDoubleThrows() {
-            MCPServerException ex = assertThrows(MCPServerException.class,
+            MCPErrorResponseException ex = assertThrows(MCPErrorResponseException.class,
                     () -> intTool().parse(Map.of("count", 5.5)));
-            assertEquals(MCPServerException.INVALID_PARAMS, ex.getCode());
             assertTrue(ex.getMessage().contains("must be a whole number"));
             assertTrue(ex.getMessage().contains("5.5"));
         }
 
         @Test
         void nanDoubleThrows() {
-            MCPServerException ex = assertThrows(MCPServerException.class,
+            MCPErrorResponseException ex = assertThrows(MCPErrorResponseException.class,
                     () -> intTool().parse(Map.of("count", Double.NaN)));
-            assertEquals(MCPServerException.INVALID_PARAMS, ex.getCode());
             assertTrue(ex.getMessage().contains("must be a whole number"));
         }
 
         @Test
         void infinityDoubleThrows() {
-            MCPServerException ex = assertThrows(MCPServerException.class,
+            MCPErrorResponseException ex = assertThrows(MCPErrorResponseException.class,
                     () -> intTool().parse(Map.of("count", Double.POSITIVE_INFINITY)));
-            assertEquals(MCPServerException.INVALID_PARAMS, ex.getCode());
             assertTrue(ex.getMessage().contains("must be a whole number"));
         }
 
         @Test
         void negativeInfinityDoubleThrows() {
-            MCPServerException ex = assertThrows(MCPServerException.class,
+            MCPErrorResponseException ex = assertThrows(MCPErrorResponseException.class,
                     () -> intTool().parse(Map.of("count", Double.NEGATIVE_INFINITY)));
-            assertEquals(MCPServerException.INVALID_PARAMS, ex.getCode());
             assertTrue(ex.getMessage().contains("must be a whole number"));
         }
 
         @Test
         void doubleOverflowIntRangeThrows() {
-            MCPServerException ex = assertThrows(MCPServerException.class,
+            MCPErrorResponseException ex = assertThrows(MCPErrorResponseException.class,
                     () -> intTool().parse(Map.of("count", 3_000_000_000.0)));
-            assertEquals(MCPServerException.INVALID_PARAMS, ex.getCode());
             assertTrue(ex.getMessage().contains("out of 32-bit integer range"));
         }
 
@@ -298,17 +291,15 @@ class MCPParameterParserTest {
 
         @Test
         void missingRequiredThrows() {
-            MCPServerException ex = assertThrows(MCPServerException.class,
+            MCPErrorResponseException ex = assertThrows(MCPErrorResponseException.class,
                     () -> stringTool().parse(Map.of()));
-            assertEquals(MCPServerException.INVALID_PARAMS, ex.getCode());
             assertEquals("Missing required parameter 'message'", ex.getMessage());
         }
 
         @Test
         void nullRequiredTreatedAsMissing() {
-            MCPServerException ex = assertThrows(MCPServerException.class,
+            MCPErrorResponseException ex = assertThrows(MCPErrorResponseException.class,
                     () -> stringTool().parse(mapWithNulls("message", null)));
-            assertEquals(MCPServerException.INVALID_PARAMS, ex.getCode());
             assertEquals("Missing required parameter 'message'", ex.getMessage());
         }
 
@@ -317,9 +308,8 @@ class MCPParameterParserTest {
             MCPParameterParser p = parser("tool", new InputSchemaBuilder()
                     .requiredString("first", "First")
                     .requiredString("second", "Second"));
-            MCPServerException ex = assertThrows(MCPServerException.class,
+            MCPErrorResponseException ex = assertThrows(MCPErrorResponseException.class,
                     () -> p.parse(Map.of("first", "hello")));
-            assertEquals(MCPServerException.INVALID_PARAMS, ex.getCode());
             assertTrue(ex.getMessage().contains("'second'"));
         }
     }

@@ -230,11 +230,12 @@ public class MCPHandler {
      * }</pre>
      *
      * @apiNote how {@code tools/call} treats the arguments: an unknown tool is
-     * {@code -32601}; a missing or {@code null} required argument is
-     * {@code -32602}; an argument not in the schema is an {@code isError}
-     * result naming the valid ones; a JSON number for an {@code integer}
-     * parameter arrives as an {@code Integer}, and a fraction or a value past
-     * 32 bits is {@code -32602}. Other numbers arrive as {@code Long} or
+     * {@code -32602}; a missing or {@code null} required argument is an
+     * {@code isError} result naming it; an argument not in the schema is an
+     * {@code isError} result naming the valid ones; a JSON number for an
+     * {@code integer} parameter arrives as an {@code Integer}, and a fraction
+     * or a value past 32 bits is an {@code isError} result
+     * (D_tool_error_codes). Other numbers arrive as {@code Long} or
      * {@code Double}, and a quoted number as a {@code String}, which the
      * {@link Parameters} accessors coerce (D_coerce_string_numbers).
      *

@@ -38,16 +38,14 @@ class ParametersTest {
     @Test
     void getStringThrowsWhenMissing() {
         var params = new Parameters(Map.of());
-        var ex = assertThrows(MCPServerException.class, () -> params.getString("name"));
-        assertEquals(MCPServerException.INVALID_PARAMS, ex.getCode());
+        var ex = assertThrows(MCPErrorResponseException.class, () -> params.getString("name"));
         assertEquals("Required parameter 'name' is missing", ex.getMessage());
     }
 
     @Test
     void getStringThrowsWhenWrongType() {
         var params = new Parameters(Map.of("name", 42));
-        var ex = assertThrows(MCPServerException.class, () -> params.getString("name"));
-        assertEquals(MCPServerException.INVALID_PARAMS, ex.getCode());
+        var ex = assertThrows(MCPErrorResponseException.class, () -> params.getString("name"));
         assertEquals("Parameter 'name' must be a string", ex.getMessage());
     }
 
@@ -68,8 +66,7 @@ class ParametersTest {
     @Test
     void getStringOrNullThrowsWhenWrongType() {
         var params = new Parameters(Map.of("name", 3.14));
-        var ex = assertThrows(MCPServerException.class, () -> params.getStringOrNull("name"));
-        assertEquals(MCPServerException.INVALID_PARAMS, ex.getCode());
+        var ex = assertThrows(MCPErrorResponseException.class, () -> params.getStringOrNull("name"));
         assertEquals("Parameter 'name' must be a string", ex.getMessage());
     }
 
@@ -90,16 +87,14 @@ class ParametersTest {
     @Test
     void getIntThrowsWhenOutOfIntRange() {
         var params = new Parameters(Map.of("ref", 3_000_000_000L));
-        var ex = assertThrows(MCPServerException.class, () -> params.getInt("ref"));
-        assertEquals(MCPServerException.INVALID_PARAMS, ex.getCode());
+        var ex = assertThrows(MCPErrorResponseException.class, () -> params.getInt("ref"));
         assertEquals("Parameter 'ref' must be an integer, got 3000000000", ex.getMessage());
     }
 
     @Test
     void getIntThrowsWhenMissing() {
         var params = new Parameters(Map.of());
-        var ex = assertThrows(MCPServerException.class, () -> params.getInt("ref"));
-        assertEquals(MCPServerException.INVALID_PARAMS, ex.getCode());
+        var ex = assertThrows(MCPErrorResponseException.class, () -> params.getInt("ref"));
         assertEquals("Required parameter 'ref' is missing", ex.getMessage());
     }
 
@@ -112,24 +107,21 @@ class ParametersTest {
     @Test
     void getIntThrowsWhenNonNumericString() {
         var params = new Parameters(Map.of("ref", "notanumber"));
-        var ex = assertThrows(MCPServerException.class, () -> params.getInt("ref"));
-        assertEquals(MCPServerException.INVALID_PARAMS, ex.getCode());
+        var ex = assertThrows(MCPErrorResponseException.class, () -> params.getInt("ref"));
         assertEquals("Parameter 'ref' must be an integer, got 'notanumber'", ex.getMessage());
     }
 
     @Test
     void getIntThrowsWhenWrongType() {
         var params = new Parameters(Map.of("ref", List.of()));
-        var ex = assertThrows(MCPServerException.class, () -> params.getInt("ref"));
-        assertEquals(MCPServerException.INVALID_PARAMS, ex.getCode());
+        var ex = assertThrows(MCPErrorResponseException.class, () -> params.getInt("ref"));
         assertEquals("Parameter 'ref' must be an integer, got ListN", ex.getMessage());
     }
 
     @Test
     void getIntThrowsWhenFractional() {
         var params = new Parameters(Map.of("ref", 3.7));
-        var ex = assertThrows(MCPServerException.class, () -> params.getInt("ref"));
-        assertEquals(MCPServerException.INVALID_PARAMS, ex.getCode());
+        var ex = assertThrows(MCPErrorResponseException.class, () -> params.getInt("ref"));
         assertEquals("Parameter 'ref' must be an integer, got 3.7", ex.getMessage());
     }
 
@@ -146,8 +138,7 @@ class ParametersTest {
     @Test
     void getNumberThrowsWhenMissing() {
         var params = new Parameters(Map.of());
-        var ex = assertThrows(MCPServerException.class, () -> params.getNumber("value"));
-        assertEquals(MCPServerException.INVALID_PARAMS, ex.getCode());
+        var ex = assertThrows(MCPErrorResponseException.class, () -> params.getNumber("value"));
         assertEquals("Required parameter 'value' is missing", ex.getMessage());
     }
 
@@ -161,16 +152,14 @@ class ParametersTest {
     @Test
     void getNumberThrowsWhenNonNumericString() {
         var params = new Parameters(Map.of("value", "notanumber"));
-        var ex = assertThrows(MCPServerException.class, () -> params.getNumber("value"));
-        assertEquals(MCPServerException.INVALID_PARAMS, ex.getCode());
+        var ex = assertThrows(MCPErrorResponseException.class, () -> params.getNumber("value"));
         assertEquals("Parameter 'value' must be a number, got 'notanumber'", ex.getMessage());
     }
 
     @Test
     void getNumberThrowsWhenWrongType() {
         var params = new Parameters(Map.of("value", List.of()));
-        var ex = assertThrows(MCPServerException.class, () -> params.getNumber("value"));
-        assertEquals(MCPServerException.INVALID_PARAMS, ex.getCode());
+        var ex = assertThrows(MCPErrorResponseException.class, () -> params.getNumber("value"));
         assertEquals("Parameter 'value' must be a number, got ListN", ex.getMessage());
     }
 
@@ -203,24 +192,21 @@ class ParametersTest {
     @Test
     void getIntOrNullThrowsWhenNonNumericString() {
         var params = new Parameters(Map.of("offset", "five"));
-        var ex = assertThrows(MCPServerException.class, () -> params.getIntOrNull("offset"));
-        assertEquals(MCPServerException.INVALID_PARAMS, ex.getCode());
+        var ex = assertThrows(MCPErrorResponseException.class, () -> params.getIntOrNull("offset"));
         assertEquals("Parameter 'offset' must be an integer, got 'five'", ex.getMessage());
     }
 
     @Test
     void getIntOrNullThrowsWhenWrongType() {
         var params = new Parameters(Map.of("offset", List.of()));
-        var ex = assertThrows(MCPServerException.class, () -> params.getIntOrNull("offset"));
-        assertEquals(MCPServerException.INVALID_PARAMS, ex.getCode());
+        var ex = assertThrows(MCPErrorResponseException.class, () -> params.getIntOrNull("offset"));
         assertEquals("Parameter 'offset' must be an integer, got ListN", ex.getMessage());
     }
 
     @Test
     void getIntOrNullThrowsWhenFractional() {
         var params = new Parameters(Map.of("offset", 10.5));
-        var ex = assertThrows(MCPServerException.class, () -> params.getIntOrNull("offset"));
-        assertEquals(MCPServerException.INVALID_PARAMS, ex.getCode());
+        var ex = assertThrows(MCPErrorResponseException.class, () -> params.getIntOrNull("offset"));
         assertEquals("Parameter 'offset' must be an integer, got 10.5", ex.getMessage());
     }
 
@@ -247,16 +233,14 @@ class ParametersTest {
     @Test
     void getBooleanOrNullThrowsWhenOtherString() {
         var params = new Parameters(Map.of("all_refs", "yes"));
-        var ex = assertThrows(MCPServerException.class, () -> params.getBooleanOrNull("all_refs"));
-        assertEquals(MCPServerException.INVALID_PARAMS, ex.getCode());
+        var ex = assertThrows(MCPErrorResponseException.class, () -> params.getBooleanOrNull("all_refs"));
         assertEquals("Parameter 'all_refs' must be a boolean, got 'yes'", ex.getMessage());
     }
 
     @Test
     void getBooleanOrNullThrowsWhenWrongType() {
         var params = new Parameters(Map.of("all_refs", 1.0));
-        var ex = assertThrows(MCPServerException.class, () -> params.getBooleanOrNull("all_refs"));
-        assertEquals(MCPServerException.INVALID_PARAMS, ex.getCode());
+        var ex = assertThrows(MCPErrorResponseException.class, () -> params.getBooleanOrNull("all_refs"));
         assertEquals("Parameter 'all_refs' must be a boolean, got Double", ex.getMessage());
     }
 
@@ -284,16 +268,14 @@ class ParametersTest {
     @Test
     void getIntArrayThrowsWhenMissing() {
         var params = new Parameters(Map.of());
-        var ex = assertThrows(MCPServerException.class, () -> params.getIntArray("indices"));
-        assertEquals(MCPServerException.INVALID_PARAMS, ex.getCode());
+        var ex = assertThrows(MCPErrorResponseException.class, () -> params.getIntArray("indices"));
         assertEquals("Required parameter 'indices' is missing", ex.getMessage());
     }
 
     @Test
     void getIntArrayThrowsWhenNotAList() {
         var params = new Parameters(Map.of("indices", "notalist"));
-        var ex = assertThrows(MCPServerException.class, () -> params.getIntArray("indices"));
-        assertEquals(MCPServerException.INVALID_PARAMS, ex.getCode());
+        var ex = assertThrows(MCPErrorResponseException.class, () -> params.getIntArray("indices"));
         assertEquals("Parameter 'indices' must be an array of integers, got String", ex.getMessage());
     }
 
@@ -306,32 +288,28 @@ class ParametersTest {
     @Test
     void getIntArrayThrowsWhenElementIsNonNumericString() {
         var params = new Parameters(Map.of("indices", List.of(1.0, "two", 3.0)));
-        var ex = assertThrows(MCPServerException.class, () -> params.getIntArray("indices"));
-        assertEquals(MCPServerException.INVALID_PARAMS, ex.getCode());
+        var ex = assertThrows(MCPErrorResponseException.class, () -> params.getIntArray("indices"));
         assertEquals("Parameter 'indices' must be an array of integers, but element at index 1 is 'two'", ex.getMessage());
     }
 
     @Test
     void getIntArrayThrowsWhenElementNotANumber() {
         var params = new Parameters(Map.of("indices", List.of(1.0, true, 3.0)));
-        var ex = assertThrows(MCPServerException.class, () -> params.getIntArray("indices"));
-        assertEquals(MCPServerException.INVALID_PARAMS, ex.getCode());
+        var ex = assertThrows(MCPErrorResponseException.class, () -> params.getIntArray("indices"));
         assertEquals("Parameter 'indices' must be an array of integers", ex.getMessage());
     }
 
     @Test
     void getIntArrayThrowsWhenElementIsFractional() {
         var params = new Parameters(Map.of("indices", List.of(1.0, 2.7, 3.0)));
-        var ex = assertThrows(MCPServerException.class, () -> params.getIntArray("indices"));
-        assertEquals(MCPServerException.INVALID_PARAMS, ex.getCode());
+        var ex = assertThrows(MCPErrorResponseException.class, () -> params.getIntArray("indices"));
         assertEquals("Parameter 'indices' must be an array of integers, but element at index 1 is 2.7", ex.getMessage());
     }
 
     @Test
     void getIntArrayThrowsWhenScalarNumber() {
         var params = new Parameters(Map.of("indices", 42));
-        var ex = assertThrows(MCPServerException.class, () -> params.getIntArray("indices"));
-        assertEquals(MCPServerException.INVALID_PARAMS, ex.getCode());
+        var ex = assertThrows(MCPErrorResponseException.class, () -> params.getIntArray("indices"));
         assertEquals("Parameter 'indices' must be an array of integers, got Integer", ex.getMessage());
     }
 
@@ -359,14 +337,13 @@ class ParametersTest {
     @Test
     void getIntArrayOrNullThrowsWhenPresentButNotAList() {
         var params = new Parameters(Map.of("indices", "1,2,3"));
-        var ex = assertThrows(MCPServerException.class, () -> params.getIntArrayOrNull("indices"));
-        assertEquals(MCPServerException.INVALID_PARAMS, ex.getCode());
+        assertThrows(MCPErrorResponseException.class, () -> params.getIntArrayOrNull("indices"));
     }
 
     @Test
     void getIntArrayOrNullThrowsWhenAnElementIsFractional() {
         var params = new Parameters(Map.of("indices", List.of(1.0, 2.5)));
-        assertThrows(MCPServerException.class, () -> params.getIntArrayOrNull("indices"));
+        assertThrows(MCPErrorResponseException.class, () -> params.getIntArrayOrNull("indices"));
     }
 
     // ── value semantics ──────────────────────────────────────────────────────
@@ -402,8 +379,8 @@ class ParametersTest {
         var params = new Parameters(Map.of());
         assertNull(params.getStringOrNull("key"));
         assertNull(params.getIntOrNull("key"));
-        assertThrows(MCPServerException.class, () -> params.getString("key"));
-        assertThrows(MCPServerException.class, () -> params.getInt("key"));
+        assertThrows(MCPErrorResponseException.class, () -> params.getString("key"));
+        assertThrows(MCPErrorResponseException.class, () -> params.getInt("key"));
     }
 
     // ── explicit null value in map ───────────────────────────────────────────
@@ -415,7 +392,7 @@ class ParametersTest {
         var params = new Parameters(map);
         assertNull(params.getStringOrNull("key"));
         assertNull(params.getIntOrNull("key"));
-        assertThrows(MCPServerException.class, () -> params.getString("key"));
-        assertThrows(MCPServerException.class, () -> params.getInt("key"));
+        assertThrows(MCPErrorResponseException.class, () -> params.getString("key"));
+        assertThrows(MCPErrorResponseException.class, () -> params.getInt("key"));
     }
 }

@@ -608,6 +608,33 @@ expected. This widens the accepted input without widening what counts as valid.
 **Booleans likewise.** `getBooleanOrNull` takes `"true"` and `"false"`, and nothing else a string
 can say.
 
+## D_tool_error_codes — Why is a bad argument an `isError` result while an unknown tool is `-32602`?
+
+`tools/call` with an unknown tool, or no `name`, answers JSON-RPC `-32602` `Unknown tool: <name>`.
+A missing or `null` required argument, a wrong type, and a fractional or out-of-range integer are
+`isError: true` results naming the parameter, as an unknown argument already was. Both follow MCP
+2025-11-25 (`R_mcp_tool_error_codes`).
+
+**Why not `-32601` for an unknown tool.** Rejected — `-32601` says the *method* does not exist;
+`tools/call` does, only its `name` parameter is wrong. "Method not found" makes a client or a
+model conclude the server does not support tools at all.
+
+**Why not keep argument errors at `-32602`, as 2025-06-18 had them.** Rejected — clients pass an
+`isError` result to the model and only may pass a protocol error, so the model loses the one
+message that tells it which argument to fix. An `isError` result is a valid answer under every
+version we negotiate, so no client breaks on it.
+
+**Why not answer per negotiated protocol version.** Rejected — it makes the session state reach
+into argument parsing, for clients that already accept an `isError` result.
+
+**Why `Parameters` throws `MCPErrorResponseException` rather than `MCPServerException`.** A tool
+reads its arguments through `Parameters`, so a wrong type surfaces there, not in the schema check.
+`INVALID_PARAMS` thrown there would be indistinguishable from a tool that throws it on purpose,
+which stays a protocol error.
+
+**Prompts are the exception.** A prompt has no `isError` channel (`R_mcp_iserror_tools_only`), so
+its argument errors stay `-32602`.
+
 ## D_conformance_two_clients — Why is the tool suite run twice, through two different clients?
 
 `AbstractToolConformanceTest` asserts the whole tool half of the protocol — `tools/list`, argument
@@ -626,9 +653,8 @@ release is class-file 61 — so a suite it drives cannot run on the Java 11 floo
 held to. The in-tree leg is what runs there.
 
 **Why not two separate suites, each written for its client.** That was the shape before, and the
-two drifted: the SDK-driven test asserted only that an unknown tool "throws", so nobody noticed it
-is `-32601` rather than `-32602` until one suite had to state the answer for both. One set of
-assertions is the point; the client is a parameter.
+two drifted: the SDK-driven test asserted only that an unknown tool "throws", which hid that the
+error code was wrong. One set of assertions is the point; the client is a parameter.
 
 **Why the adapter converts to this module's types.** The suite then reads the same way on both
 sides. Conversion happens only on the way out, after the SDK has parsed the response, so a reply

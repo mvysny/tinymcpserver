@@ -122,7 +122,7 @@ class MCPPromptHandler {
         try {
             parsed = prompt.parser.parse(rawArgs);
         } catch (MCPErrorResponseException e) {
-            // No isError channel here, so the unknown-argument hint rides INVALID_PARAMS.
+            // No isError channel here, so argument validation rides INVALID_PARAMS.
             throw new MCPServerException(MCPServerException.INVALID_PARAMS, e.getMessage());
         }
         Map<String, String> typedArgs = new LinkedHashMap<>();

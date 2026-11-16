@@ -41,7 +41,9 @@ Cap 12 KB — over it, research or doc-comment content has crept in.
 3. The named `MCPSession` runs the request inside `runLocked`, which refreshes its last-access
    stamp and fails fast if the session was already closed.
 4. `MCPToolHandler` looks the tool up, parses arguments against the declared schema, and invokes
-   the `ToolFunction` with a `ToolRequest` (`D_request_records`).
+   the `ToolFunction` with a `ToolRequest` (`D_request_records`). An unknown tool is `-32602`; a
+   bad argument, caught by the schema or a `Parameters` accessor, throws
+   `MCPErrorResponseException` (`D_tool_error_codes`).
 5. The function returns `Content`, or throws. A thrown `MCPErrorResponseException` becomes
    `isError: true` with its message; an `MCPServerException` becomes a JSON-RPC error; anything
    else unexpected is logged at SEVERE and rendered as HTTP 500.

@@ -99,6 +99,7 @@ cut what the provenance markers already carry.
   **[docs, spec 2025-06-18]**
 - Claude Code sends the negotiated version, not its own latest: after negotiating `2025-11-25`
   every request carried `2025-11-25`, and `initialize` carried none.
-  **[verified 2026-09-24, Claude Code 2.1.281, logging proxy]**
+  **[verified 2026-09-24, Claude Code 2.1.281, logging proxy; again 2026-11-16, 2.1.325]**
 - Before `initialize` it probes with `server/discover` carrying `2026-07-28` and no session; an
-  HTTP 400 makes it fall back to `initialize`. **[verified 2026-09-24, Claude Code 2.1.281]**
+  HTTP 400 makes it fall back to `initialize`. **[verified 2026-09-24, Claude Code 2.1.281;
+  again 2026-11-16, 2.1.325]**
